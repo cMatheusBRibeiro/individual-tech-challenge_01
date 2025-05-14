@@ -1,5 +1,6 @@
 package br.com.fiap.techchallenge.controller;
 
+import br.com.fiap.techchallenge.dto.DadosTrocaDeSenha;
 import br.com.fiap.techchallenge.dto.NovoUsuario;
 import br.com.fiap.techchallenge.dto.UsuarioDetalhamento;
 import br.com.fiap.techchallenge.dto.UsuarioEditado;
@@ -111,6 +112,25 @@ public class UsuarioController {
         } catch (Exception e) {
             System.out.println(e);
             return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PutMapping("/trocar-senha/{id}")
+    public ResponseEntity<String> trocarSenha (
+            @PathVariable UUID id,
+            @RequestBody DadosTrocaDeSenha dadosTrocaDeSenha
+    ) {
+        try {
+            if (!dadosTrocaDeSenha.novaSenha().equals(dadosTrocaDeSenha.confirmacaoSenha())) {
+                throw new RuntimeException("A nova senha e a confirmação dela estão diferentes!");
+            }
+
+            usuarioService.trocarSenha(id, dadosTrocaDeSenha);
+
+            return ResponseEntity.ok("Senha trocada com sucesso!");
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

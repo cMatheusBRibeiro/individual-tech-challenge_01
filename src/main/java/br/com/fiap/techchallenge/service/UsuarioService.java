@@ -1,5 +1,6 @@
 package br.com.fiap.techchallenge.service;
 
+import br.com.fiap.techchallenge.dto.DadosTrocaDeSenha;
 import br.com.fiap.techchallenge.dto.NovoUsuario;
 import br.com.fiap.techchallenge.dto.UsuarioEditado;
 import br.com.fiap.techchallenge.model.Endereco;
@@ -74,4 +75,21 @@ public class UsuarioService {
         usuarioRepository.deleteById(id);
     }
 
+    public void trocarSenha(UUID id, DadosTrocaDeSenha dadosTrocaDeSenha) {
+        var usuarioOptional = usuarioRepository.findById(id);
+
+        if (usuarioOptional.isEmpty()) {
+            throw new RuntimeException("Usuário não existe!");
+        }
+
+        var usuario = usuarioOptional.get();
+
+        if (!usuario.getSenha().equals(dadosTrocaDeSenha.senhaAtual())) {
+            throw new RuntimeException("Senha atual não é igual a enviada!");
+        }
+
+        usuario.setSenha(dadosTrocaDeSenha.novaSenha());
+
+        usuarioRepository.save(usuario);
+    }
 }
